@@ -24,14 +24,14 @@ export function createServer(): McpServer {
   });
 
   // Two-part registration: tool + resource, tied together by the resource URI.
-  const resourceUri = "ui://get-time/mcp-app.html";
+  const resourceUri = "ui://get-sends/mcp-app.html";
 
   // Register a tool with UI metadata. When the host calls this tool, it reads
   // `_meta.ui.resourceUri` to know which resource to fetch and render as an
   // interactive UI.
   registerAppTool(
     server,
-    "get-time",
+    "get-sends",
     {
       title: "Get Time",
       description: "Returns the current server time.",
