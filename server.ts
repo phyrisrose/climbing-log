@@ -9,10 +9,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 
-const DIST_DIR = path.join(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "dist",
-);
+const ROOT_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DIST_DIR = path.join(ROOT_DIR, "dist");
+const SENDS_PATH = path.join(ROOT_DIR, "sends.json");
+
+type Send = { date: string; name: string; grade: string; location: string };
 
 /**
  * Creates a new MCP server instance with tools and resources registered.
@@ -33,14 +34,19 @@ export function createServer(): McpServer {
     server,
     "get-sends",
     {
-      title: "Get Time",
-      description: "Returns the current server time.",
+      title: "Get Sends",
+      description:
+        "Returns the climbing log: every logged send with date, name, grade, and location.",
       inputSchema: z.object({}),
       _meta: { ui: { resourceUri } }, // Links this tool to its UI resource
     },
     async () => {
-      const time = new Date().toISOString();
-      return { content: [{ type: "text", text: time }] };
+      const sends: Send[] = JSON.parse(await fs.readFile(SENDS_PATH, "utf-8"));
+      return {
+        // Text for the model; structuredContent for the View.
+        content: [{ type: "text", text: JSON.stringify(sends) }],
+        structuredContent: { sends },
+      };
     },
   );
 

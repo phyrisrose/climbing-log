@@ -1,0 +1,17 @@
+[
+  { "date": "2026-03-14", "name": "Pea Brain", "grade": "5.10a", "location": "Eldorado Canyon, CO" },
+  { "date": "2026-03-22", "name": "The Bulge", "grade": "5.7", "location": "Eldorado Canyon, CO" },
+  { "date": "2026-04-05", "name": "Gill Crack", "grade": "V3", "location": "Horsetooth Reservoir, CO" },
+  { "date": "2026-04-19", "name": "Mental Block", "grade": "V5", "location": "Horsetooth Reservoir, CO" },
+  { "date": "2026-05-02", "name": "Wind Tower Ridge", "grade": "5.6", "location": "Eldorado Canyon, CO" },
+  { "date": "2026-05-17", "name": "Animal Magnetism", "grade": "5.11c", "location": "Rifle Mountain Park, CO" },
+  { "date": "2026-05-31", "name": "The Free Willy Wall", "grade": "5.10d", "location": "Shelf Road, CO" },
+  { "date": "2026-06-13", "name": "Kind Line", "grade": "V4", "location": "Rocky Mountain National Park, CO" },
+  { "date": "2026-06-28", "name": "Freaks of the Industry", "grade": "V6", "location": "Rocky Mountain National Park, CO" },
+  { "date": "2026-07-11", "name": "Bastille Crack", "grade": "5.8", "location": "Eldorado Canyon, CO" },
+  { "date": "2026-07-26", "name": "Spinal Fusion", "grade": "5.11a", "location": "Clear Creek Canyon, CO" },
+  { "date": "2026-08-09", "name": "Moby Grape", "grade": "5.8", "location": "Cannon Cliff, NH" },
+  { "date": "2026-08-23", "name": "Wingtip", "grade": "V2", "location": "Rocky Mountain National Park, CO" },
+  { "date": "2026-09-12", "name": "Rewritten", "grade": "5.7", "location": "Eldorado Canyon, CO" },
+  { "date": "2026-10-04", "name": "Dark Horse", "grade": "V5", "location": "Joe's Valley, UT" }
+]
