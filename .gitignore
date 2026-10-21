@@ -1,2 +1,4 @@
 node_modules/
-dist/ext-apps/
+dist/
+ext-apps/
+scratch.ts
