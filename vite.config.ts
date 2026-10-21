@@ -1,3 +1,4 @@
+import react from "@vitejs/plugin-react";
 import { createLogger, defineConfig } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
@@ -17,7 +18,7 @@ for (const level of ["info", "warn", "error"] as const) {
 
 export default defineConfig({
   customLogger: prefixedLogger,
-  plugins: [viteSingleFile()],
+  plugins: [react(), viteSingleFile()],
   build: {
     sourcemap: isDevelopment ? "inline" : undefined,
     cssMinify: !isDevelopment,
