@@ -1,0 +1,110 @@
+/* Placeholder colors from the Claude Design 1c prototype (light theme).
+   Slice 3 swaps these for the host's theme variables. */
+:root {
+  --ledger-bg: #f8f4f4;
+  --ledger-text: #201f1d;
+  --ledger-text-secondary: #605d5d;
+  --ledger-border: rgba(32, 31, 29, 0.16);
+  --ledger-border-faint: rgba(32, 31, 29, 0.07);
+  --ledger-mark: #9b9797;
+  --ledger-accent: #a06f24;
+}
+
+body {
+  margin: 0;
+  background: var(--ledger-bg);
+  color: var(--ledger-text);
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
+.ledger {
+  padding: 18px 22px 14px;
+}
+
+.ledger-header h1 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.ledger-header p {
+  margin: 2px 0 0;
+  color: var(--ledger-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 16px;
+}
+
+/* count + bar | grade | dot strip */
+.ledger-row {
+  display: grid;
+  grid-template-columns: 120px 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  height: 18px;
+}
+
+.ledger-count {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-bar {
+  height: 8px;
+  max-width: calc(100% - 28px);
+  border-radius: 2px;
+  background: var(--ledger-mark);
+}
+
+.ledger-grade {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The strip: a box with a faint center line. Dots are positioned inside it. */
+.dot-strip {
+  position: relative;
+  height: 100%;
+  border-left: 1px solid var(--ledger-border-faint);
+}
+
+.dot-strip::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px solid var(--ledger-border-faint);
+}
+
+/* A dot centers itself on its `left` position. Set `left` inline. */
+.dot {
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ledger-mark);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.dot--first {
+  width: 8px;
+  height: 8px;
+  background: var(--ledger-accent);
+  z-index: 1;
+}
+
+.ledger-empty {
+  padding: 18px 22px;
+  color: var(--ledger-text-secondary);
+}

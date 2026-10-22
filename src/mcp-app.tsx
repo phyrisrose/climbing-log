@@ -3,6 +3,8 @@ import { useApp } from "@modelcontextprotocol/ext-apps/react";
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { Send } from "./grades.ts";
+import { Ledger } from "./Ledger.tsx";
+import "./mcp-app.css";
 
 // The tool's structuredContent is { sends: Send[] }. null means it's missing.
 function getSends(result: CallToolResult): Send[] | null {
@@ -23,28 +25,11 @@ function ClimbingLog() {
     },
   });
 
-  async function refresh() {
-    if (!app) return;
-    setSends(getSends(await app.callServerTool({ name: "get-sends", arguments: {} })));
-  }
-
   if (error) return <p>[ERROR] {error.message}</p>;
   if (!app || sends === undefined) return <p>Loading...</p>;
   if (sends === null) return <p>[ERROR] No sends in the tool result.</p>;
 
-  return (
-    <main>
-      <h1>Sends</h1>
-      <ul>
-        {sends.map((s) => (
-          <li key={`${s.date}-${s.name}`}>
-            {s.date} — {s.name} ({s.grade}) @ {s.location}
-          </li>
-        ))}
-      </ul>
-      <button onClick={refresh}>Refresh</button>
-    </main>
-  );
+  return <Ledger sends={sends} />;
 }
 
 createRoot(document.getElementById("root")!).render(
