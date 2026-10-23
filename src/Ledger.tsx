@@ -1,6 +1,6 @@
 import { DotStrip } from "./DotStrip.tsx";
 import { buildLedgerRows, getDiscipline, type Send } from "./grades.ts";
-import { monthRange } from "./timeline.ts";
+import { formatRange, monthRange } from "./timeline.ts";
 
 /** The Grade ledger for routes: one row per grade sent, hardest first. */
 export function Ledger({ sends }: { sends: Send[] }) {
@@ -19,7 +19,8 @@ export function Ledger({ sends }: { sends: Send[] }) {
       <header className="ledger-header">
         <h1>Grade ledger</h1>
         <p>
-          {routeCount} {routeCount === 1 ? "route" : "routes"} · hardest {rows[0].grade}
+          {routeCount} {routeCount === 1 ? "route" : "routes"} · hardest {rows[0].grade} ·{" "}
+          {formatRange(range)}
         </p>
       </header>
       <div className="ledger-rows">

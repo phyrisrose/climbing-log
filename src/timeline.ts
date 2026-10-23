@@ -53,3 +53,37 @@ export function datePercent(date: string, range: DateRange): number | null {
 
   return percentage;
 }
+
+/**
+ * The range as a short label for the ledger header.
+ *   { start: "2026-03-01", end: "2026-11-01" } → "Mar – Oct 2026"
+ *   { start: "2026-11-01", end: "2027-03-01" } → "Nov 2026 – Feb 2027"
+ *   { start: "2026-12-01", end: "2027-01-01" } → "Dec 2026"
+ * (Intl puts thin spaces around the en dash.)
+ *
+ * Works for any range, not just month-aligned ones: range.end is exclusive,
+ * so it formats up to the day before it. Everything is in UTC, the same as
+ * the "YYYY-MM-DD" strings, so the viewer's time zone doesn't change the
+ * result. `locale` defaults to the viewer's; tests pass a fixed one.
+ */
+export function formatRange(
+  range: DateRange,
+  locale = navigator.language,
+): string {
+  const startDate = new Date(range.start);
+  const endDate = new Date(range.end);
+
+  const customOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  };
+
+  const dateTimeFormat = new Intl.DateTimeFormat(locale, customOptions);
+
+  // need to move the date back one day - just for the end date
+  const endDateSetBack = new Date(endDate.getTime());
+  endDateSetBack.setUTCDate(endDateSetBack.getUTCDate() - 1);
+
+  return dateTimeFormat.formatRange(startDate, endDateSetBack);
+}
