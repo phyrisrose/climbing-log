@@ -1,5 +1,5 @@
 import type { CallToolResult } from "@modelcontextprotocol/client";
-import { useApp } from "@modelcontextprotocol/ext-apps/react";
+import { useApp, useHostStyles } from "@modelcontextprotocol/ext-apps/react";
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
 import type { Send } from "./grades.ts";
@@ -24,6 +24,10 @@ function ClimbingLog() {
       app.ontoolresult = (result) => setSends(getSends(result));
     },
   });
+
+  // Applies the host's CSS variables, fonts and light/dark color-scheme to
+  // the page, and keeps them in sync when the host changes theme.
+  useHostStyles(app, app?.getHostContext());
 
   if (error) return <p>[ERROR] {error.message}</p>;
   if (!app || sends === undefined) return <p>Loading...</p>;

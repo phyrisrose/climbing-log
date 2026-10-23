@@ -1,20 +1,35 @@
-/* Placeholder colors from the Claude Design 1c prototype (light theme).
-   Slice 3 swaps these for the host's theme variables. */
+/* Colors come from the host: useHostStyles sets the host's --color-* variables
+   on :root, plus data-theme="light" | "dark". The fallbacks are the Claude
+   Design 1c values, used when a host doesn't send a variable.
+
+   Not light-dark(): Vite's CSS minifier rewrites it to follow the OS setting
+   (prefers-color-scheme) instead of the host's theme. */
 :root {
-  --ledger-bg: #f8f4f4;
-  --ledger-text: #201f1d;
-  --ledger-text-secondary: #605d5d;
-  --ledger-border: rgba(32, 31, 29, 0.16);
-  --ledger-border-faint: rgba(32, 31, 29, 0.07);
+  --ledger-bg: var(--color-background-primary, #f8f4f4);
+  --ledger-text: var(--color-text-primary, #201f1d);
+  --ledger-text-secondary: var(--color-text-secondary, #605d5d);
+  --ledger-border-faint: var(--color-border-tertiary, rgba(32, 31, 29, 0.07));
+
+  /* Chart colors the host has no variables for: always ours. */
   --ledger-mark: #9b9797;
   --ledger-accent: #a06f24;
+}
+
+:root[data-theme="dark"] {
+  --ledger-bg: var(--color-background-primary, #2d2b2b);
+  --ledger-text: var(--color-text-primary, #f3f2f2);
+  --ledger-text-secondary: var(--color-text-secondary, #bab6b6);
+  --ledger-border-faint: var(--color-border-tertiary, rgba(243, 242, 242, 0.07));
+
+  --ledger-mark: #7d7979;
+  --ledger-accent: #e1ad66;
 }
 
 body {
   margin: 0;
   background: var(--ledger-bg);
   color: var(--ledger-text);
-  font: 12px/1.4 system-ui, sans-serif;
+  font: 12px/1.4 var(--font-sans, system-ui, sans-serif);
 }
 
 .ledger {
@@ -40,10 +55,11 @@ body {
   margin-top: 16px;
 }
 
-/* count + bar | grade | dot strip */
+/* count + bar | grade | dot strip. The count column shrinks with the width
+   (22%, between 56px and 120px) so the strip keeps most of the space. */
 .ledger-row {
   display: grid;
-  grid-template-columns: 120px 48px minmax(0, 1fr);
+  grid-template-columns: clamp(56px, 22%, 120px) 48px minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   height: 18px;
@@ -107,4 +123,15 @@ body {
 .ledger-empty {
   padding: 18px 22px;
   color: var(--ledger-text-secondary);
+}
+
+@media (max-width: 420px) {
+  .ledger {
+    padding: 14px 12px 10px;
+  }
+
+  .ledger-row {
+    grid-template-columns: clamp(72px, 26%, 120px) 40px minmax(0, 1fr);
+    gap: 8px;
+  }
 }
