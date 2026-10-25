@@ -1,43 +1,104 @@
+import { useState } from "react";
+import { DisciplineToggle } from "./DisciplineToggle.tsx";
 import { DotStrip } from "./DotStrip.tsx";
-import { buildLedgerRows, getDiscipline, type Send } from "./grades.ts";
+import {
+  buildLedgerRows,
+  getDiscipline,
+  type Discipline,
+  type Send,
+} from "./grades.ts";
 import { formatRange, monthRange } from "./timeline.ts";
 
-/** The Grade ledger for routes: one row per grade sent, hardest first. */
-export function Ledger({ sends }: { sends: Send[] }) {
-  const rows = buildLedgerRows(sends, "route");
-  if (rows.length === 0) return <p className="ledger-empty">No routes logged yet.</p>;
+const NOUNS: Record<Discipline, [singular: string, plural: string]> = {
+  route: ["route", "routes"],
+  boulder: ["boulder", "boulders"],
+};
 
-  const routeCount = rows.reduce((n, r) => n + r.sends.length, 0);
-  const maxCount = Math.max(...rows.map((r) => r.sends.length));
-  // One shared range so every row's dots line up on the same time axis.
-  const range = monthRange(
-    sends.filter((s) => getDiscipline(s.grade) === "route").map((s) => s.date),
-  );
+const pluralize = (discipline: Discipline, n: number) =>
+  NOUNS[discipline][n === 1 ? 0 : 1];
+
+/** The Grade ledger: one row per grade sent, hardest first, for one discipline at a time. */
+export function Ledger({ sends }: { sends: Send[] }) {
+  const [discipline, setDiscipline] = useState<Discipline>("route");
+
+  // Only sends with a valid grade count anywhere in the ledger.
+  const valid = sends.filter((s) => getDiscipline(s.grade) !== null);
+  if (valid.length === 0)
+    return <p className="ledger-empty">No sends logged yet.</p>;
+
+  const routeRows = buildLedgerRows(valid, "route");
+  const boulderRows = buildLedgerRows(valid, "boulder");
+  const rows = discipline === "route" ? routeRows : boulderRows;
+
+  const countOf = (r: typeof rows) =>
+    r.reduce((n, row) => n + row.sends.length, 0);
+  const counts: Record<Discipline, number> = {
+    route: countOf(routeRows),
+    boulder: countOf(boulderRows),
+  };
+  const count = counts[discipline];
+  const maxCount = Math.max(1, ...rows.map((r) => r.sends.length));
+
+  // One range for both tabs, from all sends, so the time axis stays put when
+  // switching between routes and boulders.
+  const range = monthRange(valid.map((s) => s.date));
+  const cragCount = new Set(valid.map((s) => s.location)).size;
 
   return (
     <section className="ledger">
       <header className="ledger-header">
-        <h1>Grade ledger</h1>
-        <p>
-          {routeCount} {routeCount === 1 ? "route" : "routes"} · hardest {rows[0].grade} ·{" "}
-          {formatRange(range)}
-        </p>
+        <div className="ledger-header-title">
+          <h1>Grade ledger</h1>
+          <p>
+            {count} {pluralize(discipline, count)}
+            {rows.length > 0 && ` · hardest ${rows[0].grade}`} ·{" "}
+            {formatRange(range)}
+          </p>
+        </div>
+        <DisciplineToggle
+          value={discipline}
+          onChange={setDiscipline}
+          counts={counts}
+        />
       </header>
-      <div className="ledger-rows">
-        {rows.map((row) => (
-          <div className="ledger-row" key={row.grade}>
-            <div className="ledger-count">
-              <span>{row.sends.length}</span>
-              <div
-                className="ledger-bar"
-                style={{ width: `${(row.sends.length / maxCount) * 100}%` }}
-              />
+
+      {rows.length === 0 ? (
+        <p className="ledger-empty">
+          No {pluralize(discipline, 0)} logged yet.
+        </p>
+      ) : (
+        <div className="ledger-rows">
+          {rows.map((row) => (
+            <div className="ledger-row" key={row.grade}>
+              <div className="ledger-count">
+                <span>{row.sends.length}</span>
+                <div
+                  className="ledger-bar"
+                  style={{ width: `${(row.sends.length / maxCount) * 100}%` }}
+                />
+              </div>
+              <div className="ledger-grade">{row.grade}</div>
+              <DotStrip sends={row.sends} range={range} />
             </div>
-            <div className="ledger-grade">{row.grade}</div>
-            <DotStrip sends={row.sends} range={range} />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
+
+      <footer className="ledger-footer">
+        <div className="ledger-legend">
+          <span>
+            <span className="legend-dot legend-dot--first" />
+            First send at grade
+          </span>
+          <span>
+            <span className="legend-dot" />
+            Repeat at grade
+          </span>
+        </div>
+        <span>
+          {cragCount} {cragCount === 1 ? "crag" : "crags"}
+        </span>
+      </footer>
     </section>
   );
 }

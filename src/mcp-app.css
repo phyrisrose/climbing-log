@@ -8,7 +8,10 @@
   --ledger-bg: var(--color-background-primary, #f8f4f4);
   --ledger-text: var(--color-text-primary, #201f1d);
   --ledger-text-secondary: var(--color-text-secondary, #605d5d);
+  --ledger-text-tertiary: var(--color-text-tertiary, #7d7979);
+  --ledger-border: var(--color-border-primary, rgba(32, 31, 29, 0.16));
   --ledger-border-faint: var(--color-border-tertiary, rgba(32, 31, 29, 0.07));
+  --ledger-bg-selected: var(--color-background-secondary, #eae7e7);
 
   /* Chart colors the host has no variables for: always ours. */
   --ledger-mark: #9b9797;
@@ -19,7 +22,10 @@
   --ledger-bg: var(--color-background-primary, #2d2b2b);
   --ledger-text: var(--color-text-primary, #f3f2f2);
   --ledger-text-secondary: var(--color-text-secondary, #bab6b6);
+  --ledger-text-tertiary: var(--color-text-tertiary, #9b9797);
+  --ledger-border: var(--color-border-primary, rgba(243, 242, 242, 0.16));
   --ledger-border-faint: var(--color-border-tertiary, rgba(243, 242, 242, 0.07));
+  --ledger-bg-selected: var(--color-background-secondary, #3a3737);
 
   --ledger-mark: #7d7979;
   --ledger-accent: #e1ad66;
@@ -34,6 +40,19 @@ body {
 
 .ledger {
   padding: 18px 22px 14px;
+}
+
+/* Title on the left, toggle on the right; the toggle wraps below when narrow. */
+.ledger-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px 16px;
+}
+
+.ledger-header-title {
+  flex: 1 1 220px;
 }
 
 .ledger-header h1 {
@@ -123,6 +142,85 @@ body {
 .ledger-empty {
   padding: 18px 22px;
   color: var(--ledger-text-secondary);
+}
+
+.ledger .ledger-empty {
+  padding: 16px 0;
+  margin: 0;
+}
+
+/* Routes / Boulders tabs. The selected tab is styled by aria-selected. */
+.discipline-toggle {
+  display: flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--ledger-border);
+  border-radius: 8px;
+}
+
+.discipline-toggle button {
+  display: flex;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ledger-text-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.discipline-toggle button[aria-selected="true"] {
+  background: var(--ledger-bg-selected);
+  color: var(--ledger-text);
+}
+
+.discipline-toggle-count {
+  color: var(--ledger-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Legend on the left, crag count on the right. */
+.ledger-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--ledger-border-faint);
+  color: var(--ledger-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-footer > span {
+  white-space: nowrap;
+}
+
+.ledger-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.ledger-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ledger-mark);
+}
+
+.legend-dot--first {
+  width: 8px;
+  height: 8px;
+  background: var(--ledger-accent);
 }
 
 @media (max-width: 420px) {
