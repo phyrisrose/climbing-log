@@ -7,7 +7,9 @@ import {
   type Discipline,
   type Send,
 } from "./grades.ts";
+import { SendTooltip } from "./SendTooltip.tsx";
 import { formatRange, monthRange } from "./timeline.ts";
+import { useSendTooltip } from "./useSendTooltip.ts";
 
 const NOUNS: Record<Discipline, [singular: string, plural: string]> = {
   route: ["route", "routes"],
@@ -20,6 +22,14 @@ const pluralize = (discipline: Discipline, n: number) =>
 /** The Grade ledger: one row per grade sent, hardest first, for one discipline at a time. */
 export function Ledger({ sends }: { sends: Send[] }) {
   const [discipline, setDiscipline] = useState<Discipline>("route");
+  // Hooks go before the early return below: React needs the same hooks
+  // called in the same order on every render.
+  const tooltip = useSendTooltip();
+
+  const changeDiscipline = (next: Discipline) => {
+    tooltip.hide(); // its dot is about to disappear
+    setDiscipline(next);
+  };
 
   // Only sends with a valid grade count anywhere in the ledger.
   const valid = sends.filter((s) => getDiscipline(s.grade) !== null);
@@ -45,7 +55,7 @@ export function Ledger({ sends }: { sends: Send[] }) {
   const cragCount = new Set(valid.map((s) => s.location)).size;
 
   return (
-    <section className="ledger">
+    <section className="ledger" ref={tooltip.containerRef}>
       <header className="ledger-header">
         <div className="ledger-header-title">
           <h1>Grade ledger</h1>
@@ -57,7 +67,7 @@ export function Ledger({ sends }: { sends: Send[] }) {
         </div>
         <DisciplineToggle
           value={discipline}
-          onChange={setDiscipline}
+          onChange={changeDiscipline}
           counts={counts}
         />
       </header>
@@ -78,7 +88,14 @@ export function Ledger({ sends }: { sends: Send[] }) {
                 />
               </div>
               <div className="ledger-grade">{row.grade}</div>
-              <DotStrip sends={row.sends} range={range} />
+              <DotStrip
+                sends={row.sends}
+                range={range}
+                active={tooltip.active}
+                onShow={tooltip.show}
+                onHide={tooltip.hide}
+                onToggle={tooltip.toggle}
+              />
             </div>
           ))}
         </div>
@@ -99,6 +116,10 @@ export function Ledger({ sends }: { sends: Send[] }) {
           {cragCount} {cragCount === 1 ? "crag" : "crags"}
         </span>
       </footer>
+
+      {tooltip.active && (
+        <SendTooltip ref={tooltip.cardRef} send={tooltip.active} style={tooltip.style} />
+      )}
     </section>
   );
 }
