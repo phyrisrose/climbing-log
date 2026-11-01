@@ -199,6 +199,111 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Toggle and fullscreen button, side by side at the header's right. */
+.ledger-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ledger-expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--ledger-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ledger-text-secondary);
+  cursor: pointer;
+}
+
+.ledger-expand:hover {
+  background: var(--ledger-bg-selected);
+  color: var(--ledger-text);
+}
+
+/* Fullscreen: both disciplines stacked on the left, crags on the right. */
+.ledger-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 40px;
+  margin-top: 16px;
+}
+
+.ledger-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+
+.ledger--expanded .ledger-rows {
+  margin-top: 0;
+}
+
+.ledger-block-label {
+  margin: 0 0 6px;
+  color: var(--ledger-text-tertiary);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.crag-list {
+  padding-left: 28px;
+  border-left: 1px solid var(--ledger-border-faint);
+}
+
+.crag-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* name | hardest grades | count */
+.crag-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 28px;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--ledger-border-faint);
+}
+
+.crag-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crag-hardest,
+.crag-count {
+  color: var(--ledger-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.crag-count {
+  text-align: right;
+}
+
+/* Narrow fullscreen: crags move below the ledger. */
+@media (max-width: 720px) {
+  .ledger-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .crag-list {
+    padding: 16px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--ledger-border-faint);
+  }
+}
+
 /* Legend on the left, crag count on the right. */
 .ledger-footer {
   display: flex;
