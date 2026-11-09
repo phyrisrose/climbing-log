@@ -2,8 +2,7 @@
 
 An [MCP App](https://github.com/modelcontextprotocol/ext-apps) that shows a climbing log inside Claude. The MCP server exposes one tool, `get-sends`, which returns the climbs (sends) in `sends.json`, along with a React view that the host renders in the conversation as a **grade ledger**: one row per grade, hardest first, with a count bar and a timeline of sends. The first send at each grade is highlighted. You can switch between routes (YDS) and boulders (V-scale), hover or tap a send for details, and open a fullscreen view with both disciplines and a per-crag summary. It follows the host's light or dark theme.
 
-<!-- Screenshot placeholder: add docs/screenshot.png and replace this comment with
-     ![Grade ledger in Claude](docs/screenshot.png) -->
+![Grade ledger in Claude](docs/screenshot.png)
 
 ## Requirements
 

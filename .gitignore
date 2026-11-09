@@ -3,3 +3,4 @@ dist/
 ext-apps/
 scratch.ts
 .claude/launch.json
+.DS_Store
