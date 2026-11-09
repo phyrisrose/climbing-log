@@ -2,3 +2,4 @@ node_modules/
 dist/
 ext-apps/
 scratch.ts
+.claude/launch.json

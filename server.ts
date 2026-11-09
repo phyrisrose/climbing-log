@@ -8,19 +8,18 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
+import type { Send } from "./src/grades.js";
 
 const ROOT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = path.join(ROOT_DIR, "dist");
 const SENDS_PATH = path.join(ROOT_DIR, "sends.json");
-
-type Send = { date: string; name: string; grade: string; location: string };
 
 /**
  * Creates a new MCP server instance with tools and resources registered.
  */
 export function createServer(): McpServer {
   const server = new McpServer({
-    name: "Quickstart MCP App Server",
+    name: "Climbing Log",
     version: "1.0.0",
   });
 
