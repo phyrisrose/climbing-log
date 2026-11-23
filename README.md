@@ -1,6 +1,6 @@
 # Climbing Log
 
-An [MCP App](https://github.com/modelcontextprotocol/ext-apps) that shows a climbing log inside Claude. The MCP server exposes one tool, `get-sends`, which returns the climbs (sends) in `sends.json`, along with a React view that the host renders in the conversation as a **grade ledger**: one row per grade, hardest first, with a count bar and a timeline of sends. The first send at each grade is highlighted. You can switch between routes (YDS) and boulders (V-scale), hover or tap a send for details, and open a fullscreen view with both disciplines and a per-crag summary. It follows the host's light or dark theme.
+An [MCP App](https://github.com/modelcontextprotocol/ext-apps) that shows a climbing log inside Claude. The MCP server exposes two tools: `get-sends`, which returns the climbs (sends) in `sends.json`, and `log-send`, which adds a new one. Both come with a React view that the host renders in the conversation as a **grade ledger**: one row per grade, hardest first, with a count bar and a timeline of sends. The first send at each grade is highlighted. You can switch between routes (YDS) and boulders (V-scale), hover or tap a send for details, and open a fullscreen view with both disciplines and a per-crag summary. It follows the host's light or dark theme.
 
 ![Grade ledger in Claude](docs/screenshot.png)
 
@@ -58,11 +58,15 @@ Claude Desktop starts the server itself and talks to it over stdio.
 
 3. Fully quit and reopen Claude, then ask something like "Show me my sends."
 
+To add a climb, just tell Claude, e.g. "I sent Pea Brain today, 5.10a at Eldorado Canyon." Claude calls `log-send`, which checks the climb and appends it to `sends.json`, and the updated ledger appears. The date defaults to today. If something's missing or wrong (an unknown grade, a future date, or the same climb already logged that day), nothing is saved and Claude gets the reason back, so it can ask you.
+
+To try `log-send` without touching your real log, point the server at a copy with `SENDS_PATH`, for example `SENDS_PATH=/tmp/sends-copy.json npm start`.
+
 If the server doesn't connect, Claude writes its output to `~/Library/Logs/Claude/mcp-server-climbinglog.log`.
 
 ## Tests
 
-The grade, timeline, tooltip-placement and crag logic is covered by unit tests using Node's built-in test runner:
+The grade, timeline, tooltip-placement, crag, input-validation and file-store logic is covered by unit tests using Node's built-in test runner:
 
 ```bash
 npm test
@@ -71,7 +75,8 @@ npm test
 ## Known limits
 
 - **US grade formats only:** YDS for routes (`5.6`–`5.15d`) and the V-scale for boulders (`VB`–`V17`). Modifiers and slash grades (`5.10+`, `5.10a/b`, `V3-4`) and other scales (French, Font) aren't supported; sends with those grades are left out of the ledger.
-- **No validation of `sends.json`:** the server reads the file as-is. A missing file or malformed JSON makes the tool call fail with a raw error.
+- **No validation of `sends.json` when reading:** new climbs from `log-send` are validated, but the server reads the file itself as-is. A missing file or malformed JSON makes the tool call fail with a raw error.
+- **Add only:** `log-send` can't edit or delete a climb. Fix mistakes by editing `sends.json` directly.
 
 ## Credits
 
