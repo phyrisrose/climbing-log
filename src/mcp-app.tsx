@@ -12,10 +12,19 @@ function getSends(result: CallToolResult): Send[] | null {
   return (result.structuredContent as { sends?: Send[] } | undefined)?.sends ?? null;
 }
 
+// The text of a result, e.g. log-send's "Not logged. …" message.
+function getText(result: CallToolResult): string {
+  return result.content
+    .flatMap((c) => (c.type === "text" ? [c.text] : []))
+    .join(" ");
+}
+
 function ClimbingLog() {
   // undefined = no tool result yet, null = the result had no sends.
   const [sends, setSends] = useState<Send[] | null>();
   const [hostContext, setHostContext] = useState<McpUiHostContext>();
+  // A tool error to show instead of the ledger, e.g. a rejected log-send.
+  const [toolError, setToolError] = useState<string | null>(null);
 
   // useApp creates the App, runs onAppCreated so we can register handlers
   // before any messages arrive, then connects to the host.
@@ -24,7 +33,14 @@ function ClimbingLog() {
     // Tells the host we can render both inline and fullscreen.
     capabilities: { availableDisplayModes: ["inline", "fullscreen"] },
     onAppCreated: (app) => {
-      app.ontoolresult = (result) => setSends(getSends(result));
+      app.ontoolresult = (result) => {
+        if (result.isError) {
+          setToolError(getText(result) || "The tool call failed.");
+        } else {
+          setToolError(null);
+          setSends(getSends(result));
+        }
+      };
     },
   });
 
@@ -44,6 +60,7 @@ function ClimbingLog() {
   }, [app]);
 
   if (error) return <p>[ERROR] {error.message}</p>;
+  if (toolError) return <p className="ledger-empty">{toolError}</p>;
   if (!app || sends === undefined) return <p>Loading...</p>;
   if (sends === null) return <p>[ERROR] No sends in the tool result.</p>;
 
