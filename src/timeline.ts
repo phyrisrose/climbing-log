@@ -1,6 +1,30 @@
-import { Temporal } from "@js-temporal/polyfill";
-
 // Date math for the ledger's time strip. Pure functions, no DOM.
+// Plain Date in UTC instead of the Temporal polyfill, which would add tens
+// of KB to the View's bundle. Every date here is a calendar date with no
+// time, and UTC has no daylight-saving jumps, so a day is always exactly
+// MS_PER_DAY long.
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/**
+ * "YYYY-MM-DD" → UTC midnight of that day, in milliseconds; null if it isn't
+ * a real calendar date. Stricter than Date.parse, which turns "2026-02-30"
+ * into March 2 and reads "2026-3-1" in local time.
+ */
+export function parseIsoDate(date: string): number | null {
+  const match = ISO_DATE.exec(date);
+  if (!match) return null;
+  const [year, month, day] = match.slice(1).map(Number);
+  const ms = Date.UTC(year, month - 1, day);
+  const parsed = new Date(ms);
+  // Date.UTC rolls overflow forward (Feb 30 → Mar 2), so check it round-trips.
+  const roundTrips =
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month - 1 &&
+    parsed.getUTCDate() === day;
+  return roundTrips ? ms : null;
+}
 
 // Inclusive start, exclusive end, both "YYYY-MM-DD".
 export type DateRange = { start: string; end: string };
@@ -20,18 +44,20 @@ export function monthRange(dates: string[]): DateRange {
   return { start: iso(y1, m1), end: iso(y2, m2 + 1) };
 }
 
+/**
+ * Whole days from dateString1 to dateString2 (negative if 2 is earlier).
+ * Throws a RangeError if either isn't a real YYYY-MM-DD date.
+ */
 export function getDaysBetweenDates(
   dateString1: string,
   dateString2: string,
 ): number {
-  const date1: Temporal.PlainDate = Temporal.PlainDate.from(dateString1);
-  const date2: Temporal.PlainDate = Temporal.PlainDate.from(dateString2);
-
-  const duration: Temporal.Duration = date1.until(date2, {
-    largestUnit: "days",
-  });
-
-  return Number(duration.days);
+  const date1 = parseIsoDate(dateString1);
+  const date2 = parseIsoDate(dateString2);
+  if (date1 === null || date2 === null) {
+    throw new RangeError(`Invalid date: ${date1 === null ? dateString1 : dateString2}`);
+  }
+  return Math.round((date2 - date1) / MS_PER_DAY);
 }
 
 /**
@@ -40,8 +66,8 @@ export function getDaysBetweenDates(
  * "2026-07-01" in { start: "2026-03-01", end: "2026-11-01" } → ≈ 49.8
  * (122 of the range's 245 days).
  *
- * A date outside the range (before start or after end) → null. Uses Temporal (via the polyfill) for the
- * day counts; throws a RangeError if a string isn't a valid date.
+ * A date outside the range (before start or after end) → null. Throws a
+ * RangeError if a string isn't a valid date.
  */
 export function datePercent(date: string, range: DateRange): number | null {
   const daysInRange = getDaysBetweenDates(range.start, range.end);

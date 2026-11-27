@@ -1,6 +1,6 @@
 // Checks and cleans up a new send before it's saved. Pure, no I/O.
-import { Temporal } from "@js-temporal/polyfill";
 import { getDiscipline, gradeRank, type Send } from "./grades.ts";
+import { parseIsoDate } from "./timeline.ts";
 
 /** What the log-send tool receives. `date` is optional: it defaults to today. */
 export type SendInput = {
@@ -17,18 +17,8 @@ export type SendInput = {
  */
 export type ValidationResult = { ok: true; send: Send } | { ok: false; errors: string[] };
 
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-
 /** True for a real calendar date in YYYY-MM-DD form ("2026-02-30" is false). */
-function isCalendarDate(date: string): boolean {
-  if (!ISO_DATE.test(date)) return false;
-  try {
-    Temporal.PlainDate.from(date); // throws a RangeError for impossible dates
-    return true;
-  } catch {
-    return false;
-  }
-}
+const isCalendarDate = (date: string) => parseIsoDate(date) !== null;
 
 /**
  * Validates and normalizes a new send.

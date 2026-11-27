@@ -3,7 +3,6 @@ import {
   registerAppTool,
   RESOURCE_MIME_TYPE,
 } from "@modelcontextprotocol/ext-apps/server";
-import { Temporal } from "@js-temporal/polyfill";
 import { McpServer } from "@modelcontextprotocol/server";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -80,8 +79,11 @@ export function createServer(): McpServer {
       _meta: { ui: { resourceUri } },
     },
     async (input) => {
-      // Today on this machine's calendar, so an evening send counts as today.
-      const today = Temporal.Now.plainDateISO().toString();
+      // Today on this machine's calendar (local time, not UTC), so an
+      // evening send in Colorado still counts as today.
+      const now = new Date();
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
       const result = validateSend(input, today);
       if (!result.ok) {
         return {
